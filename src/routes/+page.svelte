@@ -2,8 +2,8 @@
 	import { onMount } from 'svelte';
 	import { Loader } from '@googlemaps/js-api-loader';
 	import type { CleaningPoint } from '$constants/types';
-	import { Button } from '$lib/components/ui/button';
-	import { Drawer } from '$lib/components/ui/drawer';
+	import { Button } from '$lib/shadcn/components/ui/button';
+	import * as Drawer from '$lib/shadcn/components/ui/drawer';
 	
 	// just like react state
 	let map: google.maps.Map;
