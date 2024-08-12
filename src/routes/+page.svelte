@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { CleaningPoint } from '$constants/types';
+	import { CleaningPointField } from '$constants/types';
 	import initMap from '$apis/initMap';
 	import getClearPoint from '$apis/getClearPoint';
 	import { Button } from '$lib/shadcn/components/ui/button';
@@ -11,11 +12,14 @@
 	let selectedPoint: CleaningPoint | null = null;
 	let isDrawerOpen = false;
 
+	const { POINT_NAME, AREA, WORK_DAY, RECYCLE_DAY, TIME, LATITUDE, LONGITUDE } = CleaningPointField;
+
 	onMount(async () => {
 		try {
 			googleMaps = await initMap();
-			cleaningPoints = await getClearPoint();
-			if (!googleMaps || !cleaningPoints) throw new Error('Map or cleaning points not found');
+			const cleanPointData = await getClearPoint();
+			if (!googleMaps || !cleanPointData) throw new Error('Map or cleaning points not found');
+			cleaningPoints = cleanPointData.records;
 			displayNearbyPoints();
 		} catch (error) {
 			console.log(error);
@@ -25,18 +29,21 @@
 	const displayNearbyPoints = () => {
 		cleaningPoints.forEach((point) => {
 			const marker = googleMaps?.setMarkers({
-				position: { lat: point.lat, lng: point.lng },
-				title: point.title
+				position: {
+					lat: point[LATITUDE],
+					lng: point[LONGITUDE]
+				},
+				title: point[POINT_NAME]
 			});
 			marker.addListener('click', () => selectPoint(point));
 		});
-	}
+	};
 
 	const selectPoint = (point: CleaningPoint) => {
 		selectedPoint = point;
-		googleMaps?.map.setCenter({ lat: point.lat, lng: point.lng });
+			googleMaps?.map.setCenter({ lat: point[LATITUDE], lng: point[LONGITUDE] });
 		isDrawerOpen = true;
-	}
+	};
 </script>
 
 <svelte:head>
@@ -55,18 +62,21 @@
 			</Drawer.Header>
 			<div class="p-4">
 				{#if selectedPoint}
-					<h2>{selectedPoint.title}</h2>
-					<p>地址：{selectedPoint.address}</p>
-					<p>每週清運日：{selectedPoint.weeklySchedule}</p>
-					<p>每週回收日：{selectedPoint.recyclingSchedule}</p>
-					<p>清運時間：{selectedPoint.time}</p>
-					<Button href={`https://www.google.com/maps/search/?api=1&query=${selectedPoint.lat}%2C${selectedPoint.lng}`} target="_blank">導航到此處</Button>
+					<h2>{selectedPoint[POINT_NAME]}</h2>
+					<p>地址：{selectedPoint[AREA]}</p>
+					<p>每週清運日：{selectedPoint[WORK_DAY]}</p>
+					<p>每週回收日：{selectedPoint[RECYCLE_DAY]}</p>
+					<p>清運時間：{selectedPoint[TIME]}</p>
+					<Button
+						href={`https://www.google.com/maps/search/?api=1&query=${selectedPoint[LATITUDE]}%2C${selectedPoint[LONGITUDE]}`}
+						target="_blank">導航到此處</Button
+					>
 				{:else}
 					<ul>
 						{#each cleaningPoints as point}
 							<li>
 								<Button variant="ghost" on:click={() => selectPoint(point)}>
-									{point.title} - {point.weeklySchedule}
+									{point[POINT_NAME]} - {point[WORK_DAY]}
 								</Button>
 							</li>
 						{/each}

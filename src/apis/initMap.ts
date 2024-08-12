@@ -1,4 +1,4 @@
-import pkg from '@googlemaps/js-api-loader';
+import * as pkg from '@googlemaps/js-api-loader';
 const { Loader } = pkg;
 
 let loader: pkg.Loader;
