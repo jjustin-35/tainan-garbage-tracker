@@ -30,28 +30,34 @@ const initMap = async () => {
 
 		const currentLocation = await getCurrentLocation();
 		const { Map } = await loader.importLibrary('maps');
-    const { AdvancedMarkerElement } = await loader.importLibrary('marker');
+		const { AdvancedMarkerElement } = await loader.importLibrary('marker');
 
 		if (!map) {
 			map = new Map(mapElement, {
 				center: {
 					lat: currentLocation.latitude,
 					lng: currentLocation.longitude
-				}
+				},
+				zoom: 15,
+				disableDefaultUI: true,
+				mapId: import.meta.env.VITE_GOOGLE_MAPS_ID
 			});
 		}
 
-    // functions
-    const setMarkers = (props: Omit<google.maps.marker.AdvancedMarkerElementOptions, 'map'>) => {
-      const marker = new AdvancedMarkerElement({
-        map,
-        ...props
-      });
+		const setMarkers = (props: Omit<google.maps.marker.AdvancedMarkerElementOptions, 'map'>) => {
+			const marker = new AdvancedMarkerElement({
+				map,
+				...props
+			});
 
-      return marker;
-    };
+			return marker;
+		};
 
-		return { map, setMarkers };
+		const currentLocationMarker = setMarkers({
+			position: { lat: currentLocation.latitude, lng: currentLocation.longitude }
+		});
+
+		return { map, currentLocationMarker, setMarkers };
 	} catch (error) {
 		console.error(error);
 	}

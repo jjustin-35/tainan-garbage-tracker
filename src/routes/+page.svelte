@@ -35,13 +35,13 @@
 				},
 				title: point[POINT_NAME]
 			});
-			marker.addListener('click', () => selectPoint(point));
+			marker?.addListener('click', () => selectPoint(point));
 		});
 	};
 
 	const selectPoint = (point: CleaningPoint) => {
 		selectedPoint = point;
-			googleMaps?.map.setCenter({ lat: point[LATITUDE], lng: point[LONGITUDE] });
+		googleMaps?.map.setCenter({ lat: point[LATITUDE], lng: point[LONGITUDE] });
 		isDrawerOpen = true;
 	};
 </script>
@@ -53,8 +53,8 @@
 <div class="flex h-screen flex-col">
 	<div id="map" class="flex-grow"></div>
 	<Drawer.Root bind:open={isDrawerOpen}>
-		<Drawer.Trigger asChild let:builder>
-			<Button builders={[builder]} class="w-full">清運點列表</Button>
+		<Drawer.Trigger>
+			<Button class="w-full" variant="outline">清運點列表</Button>
 		</Drawer.Trigger>
 		<Drawer.Content>
 			<Drawer.Header>

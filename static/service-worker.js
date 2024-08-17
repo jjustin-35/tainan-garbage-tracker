@@ -1,10 +1,6 @@
 const CACHE_NAME = 'tainan-trash-tracker-v1';
 const urlsToCache = [
   '/',
-  '/index.html',
-  '/global.css',
-  '/build/bundle.js',
-  '/build/bundle.css'
 ];
 
 self.addEventListener('install', (event) => {
