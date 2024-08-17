@@ -60,7 +60,7 @@
 			<Drawer.Header>
 				<Drawer.Title>附近清運點</Drawer.Title>
 			</Drawer.Header>
-			<div class="p-4">
+			<div class="p-4 overflow-scroll max-h-[400px]">
 				{#if selectedPoint}
 					<h2>{selectedPoint[POINT_NAME]}</h2>
 					<p>地址：{selectedPoint[AREA]}</p>

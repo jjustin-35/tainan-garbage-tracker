@@ -20,29 +20,25 @@ const initMap = async () => {
 	}
 
 	try {
-		if (!loader) {
-			loader = new Loader({
-				apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-				version: 'weekly'
-				// libraries: ['places']
-			});
-		}
+		loader = new Loader({
+			apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+			version: 'weekly'
+			// libraries: ['places']
+		});
 
 		const currentLocation = await getCurrentLocation();
 		const { Map } = await loader.importLibrary('maps');
 		const { AdvancedMarkerElement } = await loader.importLibrary('marker');
 
-		if (!map) {
-			map = new Map(mapElement, {
-				center: {
-					lat: currentLocation.latitude,
-					lng: currentLocation.longitude
-				},
-				zoom: 15,
-				disableDefaultUI: true,
-				mapId: import.meta.env.VITE_GOOGLE_MAPS_ID
-			});
-		}
+		map = new Map(mapElement, {
+			center: {
+				lat: currentLocation.latitude,
+				lng: currentLocation.longitude
+			},
+			zoom: 15,
+			disableDefaultUI: true,
+			mapId: import.meta.env.VITE_GOOGLE_MAPS_ID
+		});
 
 		const setMarkers = (props: Omit<google.maps.marker.AdvancedMarkerElementOptions, 'map'>) => {
 			const marker = new AdvancedMarkerElement({
