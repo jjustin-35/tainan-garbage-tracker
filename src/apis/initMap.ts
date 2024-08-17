@@ -22,13 +22,14 @@ const initMap = async () => {
 	try {
 		loader = new Loader({
 			apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-			version: 'weekly'
-			// libraries: ['places']
+			version: 'weekly',
+			libraries: ['geocoding']
 		});
 
 		const currentLocation = await getCurrentLocation();
 		const { Map } = await loader.importLibrary('maps');
 		const { AdvancedMarkerElement } = await loader.importLibrary('marker');
+		const { Geocoder } = await loader.importLibrary('geocoding');
 
 		map = new Map(mapElement, {
 			center: {
@@ -39,6 +40,7 @@ const initMap = async () => {
 			disableDefaultUI: true,
 			mapId: import.meta.env.VITE_GOOGLE_MAPS_ID
 		});
+		const geocoder = new Geocoder();
 
 		const setMarkers = (props: Omit<google.maps.marker.AdvancedMarkerElementOptions, 'map'>) => {
 			const marker = new AdvancedMarkerElement({
@@ -49,11 +51,16 @@ const initMap = async () => {
 			return marker;
 		};
 
-		const currentLocationMarker = setMarkers({
+		const getAddress = async (location: { lat: number, lng: number }) => {
+			const response = await geocoder.geocode({ location  });
+			return response.results[0];
+		};
+
+		setMarkers({
 			position: { lat: currentLocation.latitude, lng: currentLocation.longitude }
 		});
 
-		return { map, currentLocationMarker, setMarkers };
+		return { map, currentLocation, setMarkers, getAddress };
 	} catch (error) {
 		console.error(error);
 	}

@@ -26,7 +26,7 @@ const getClearPoint = async ({ limit, query }: { limit?: number; query?: string 
 	try {
 		let url = `${config.TAINAN_API_URL}${ApiPath.GET_TAINAN_DATA}?resource_id=${config.TAINAN_API_ID}`;
 		if (limit || query) {
-			url += `${limit ? `&limit=${limit}` : ''}${query ? `&${query}` : ''}`;
+			url += `${limit ? `&limit=${limit}` : ''}${query ? `&q=${query}` : ''}`;
 		}
 		const resp = await fetch(url);
 		const data: ApiResponse<CleanPointData> = await resp.json();

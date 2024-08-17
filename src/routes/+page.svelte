@@ -17,7 +17,12 @@
 	onMount(async () => {
 		try {
 			googleMaps = await initMap();
-			const cleanPointData = await getClearPoint();
+			const currentAddress = await googleMaps?.getAddress({
+				lat: googleMaps.currentLocation.latitude,
+				lng: googleMaps.currentLocation.longitude
+			});
+			const district = currentAddress?.address_components.find((component) => component.types.includes('administrative_area_level_2'))?.long_name;
+			const cleanPointData = await getClearPoint({ query: district });
 			if (!googleMaps || !cleanPointData) throw new Error('Map or cleaning points not found');
 			cleaningPoints = cleanPointData.records;
 			displayNearbyPoints();
@@ -60,7 +65,7 @@
 			<Drawer.Header>
 				<Drawer.Title>附近清運點</Drawer.Title>
 			</Drawer.Header>
-			<div class="p-4 overflow-scroll max-h-[400px]">
+			<div class="max-h-[400px] overflow-scroll p-4">
 				{#if selectedPoint}
 					<h2>{selectedPoint[POINT_NAME]}</h2>
 					<p>地址：{selectedPoint[AREA]}</p>
