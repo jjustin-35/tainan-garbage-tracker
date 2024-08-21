@@ -18,7 +18,8 @@ const config = {
 			$lib: './src/lib',
 			$components: './src/components',
 			$routes: './src/routes',
-			$constants: './src/constants'
+			$constants: './src/constants',
+			$helpers: './src/helpers'
 		}
 	}
 };

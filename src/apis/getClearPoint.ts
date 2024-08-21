@@ -1,6 +1,8 @@
 import config from '$config';
 import ApiPath from '$constants/apiPath';
 import type { ApiResponse, CleaningPoint } from '$constants/types';
+import { CleaningPointField } from '$constants/types';
+import { calculateBoundingBox } from '$helpers/calculateBoundingBox';
 
 export type CleanPointData = {
 	help: string;
@@ -22,12 +24,51 @@ export type CleanPointData = {
 	};
 };
 
-const getClearPoint = async ({ limit, query }: { limit?: number; query?: string } = {}) => {
+const getClearPoint = async ({
+	limit,
+	query,
+	boundingSearch
+}: {
+	limit?: number;
+	query?: string;
+	boundingSearch?: {
+		lat: number;
+		lon: number;
+		distance: number;
+	};
+} = {}) => {
 	try {
-		let url = `${config.TAINAN_API_URL}${ApiPath.GET_TAINAN_DATA}?resource_id=${config.TAINAN_API_ID}`;
-		if (limit || query) {
-			url += `${limit ? `&limit=${limit}` : ''}${query ? `&q=${query}` : ''}`;
+		let url = `${config.TAINAN_API_URL}${ApiPath.GET_TAINAN_DATA}`;
+		const params = new URLSearchParams({
+			resource_id: config.TAINAN_API_ID
+		});
+
+		if (limit) {
+			params.append('limit', limit.toString());
 		}
+		if (query) {
+			params.append('q', query);
+		}
+
+		// 添加經緯度範圍查詢
+		if (boundingSearch) {
+			const boundingBox = calculateBoundingBox(
+				boundingSearch.lat,
+				boundingSearch.lon,
+				boundingSearch.distance
+			);
+			params.append('filters', JSON.stringify({
+				[CleaningPointField.LATITUDE]: {
+					between: [boundingBox.minLat, boundingBox.maxLat]
+				},
+				[CleaningPointField.LONGITUDE]: {
+					between: [boundingBox.minLon, boundingBox.maxLon]
+				}
+			}));
+		}
+
+		url += `?${params.toString()}`;
+
 		const resp = await fetch(url);
 		const data: ApiResponse<CleanPointData> = await resp.json();
 

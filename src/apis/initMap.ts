@@ -1,9 +1,6 @@
 import * as pkg from '@googlemaps/js-api-loader';
 const { Loader } = pkg;
 
-let loader: pkg.Loader;
-let map: google.maps.Map;
-
 const getCurrentLocation = async () => {
 	const geolocation = await new Promise<GeolocationPosition>((resolve, reject) => {
 		navigator.geolocation.getCurrentPosition(resolve, reject);
@@ -20,7 +17,7 @@ const initMap = async () => {
 	}
 
 	try {
-		loader = new Loader({
+		const loader = new Loader({
 			apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
 			version: 'weekly',
 			libraries: ['geocoding']
@@ -31,7 +28,7 @@ const initMap = async () => {
 		const { AdvancedMarkerElement } = await loader.importLibrary('marker');
 		const { Geocoder } = await loader.importLibrary('geocoding');
 
-		map = new Map(mapElement, {
+		const map = new Map(mapElement, {
 			center: {
 				lat: currentLocation.latitude,
 				lng: currentLocation.longitude

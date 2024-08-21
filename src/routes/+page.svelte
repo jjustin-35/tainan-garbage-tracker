@@ -16,15 +16,19 @@
 
 	onMount(async () => {
 		try {
-			googleMaps = await initMap();
-			const currentAddress = await googleMaps?.getAddress({
-				lat: googleMaps.currentLocation.latitude,
-				lng: googleMaps.currentLocation.longitude
-			});
-			const district = currentAddress?.address_components.find((component) => component.types.includes('administrative_area_level_2'))?.long_name;
-			const cleanPointData = await getClearPoint({ query: district });
-			if (!googleMaps || !cleanPointData) throw new Error('Map or cleaning points not found');
-			cleaningPoints = cleanPointData.records;
+			if (!googleMaps) googleMaps = await initMap();
+			if (!cleaningPoints?.length) {
+				const cleanPointData = await getClearPoint({
+					boundingSearch: {
+						lat: googleMaps.currentLocation.latitude,
+						lon: googleMaps.currentLocation.longitude,
+						distance: 1
+					}
+				});
+				cleaningPoints = cleanPointData?.records;
+			}
+			console.log(cleaningPoints);
+			if (!googleMaps || !cleaningPoints) throw new Error('Map or cleaning points not found');
 			displayNearbyPoints();
 		} catch (error) {
 			console.log(error);
