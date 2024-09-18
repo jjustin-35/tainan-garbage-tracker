@@ -19,13 +19,10 @@
 			if (!googleMaps) googleMaps = await initMap();
 			if (!cleaningPoints?.length) {
 				const cleanPointData = await getClearPoint({
-					// boundingSearch: {
-					// 	lat: googleMaps.currentLocation.latitude,
-					// 	lon: googleMaps.currentLocation.longitude,
-					// 	distance: 1 //km
-					// }
-					queries: {
-						[CleaningPointField.AREA]: '永康區'
+					boundingSearch: {
+						lat: googleMaps.currentLocation.latitude,
+						lon: googleMaps.currentLocation.longitude,
+						distance: 0.5 //km
 					}
 				});
 				cleaningPoints = cleanPointData?.records;
@@ -52,7 +49,7 @@
 
 	const selectPoint = (point: CleaningPoint) => {
 		selectedPoint = point;
-		googleMaps?.map.setCenter({ lat: point[LATITUDE], lng: point[LONGITUDE] });
+		googleMaps?.map.setCenter({ lat: Number(point[LATITUDE]), lng: Number(point[LONGITUDE]) });
 		isDrawerOpen = true;
 	};
 </script>

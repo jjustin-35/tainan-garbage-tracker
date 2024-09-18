@@ -33,7 +33,7 @@ const initMap = async () => {
 				lat: currentLocation.latitude,
 				lng: currentLocation.longitude
 			},
-			zoom: 15,
+			zoom: 17,
 			disableDefaultUI: true,
 			mapId: import.meta.env.VITE_GOOGLE_MAPS_ID
 		});

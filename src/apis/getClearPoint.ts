@@ -30,7 +30,9 @@ const getClearPoint = async ({
 	boundingSearch
 }: {
 	limit?: number;
-	queries?: Partial<Record<CleaningPointField, string>>;
+	queries?: {
+		[key in CleaningPointField]?: string;
+	};
 	boundingSearch?: {
 		lat: number;
 		lon: number;
