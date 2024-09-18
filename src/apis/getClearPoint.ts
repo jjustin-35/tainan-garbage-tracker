@@ -26,11 +26,11 @@ export type CleanPointData = {
 
 const getClearPoint = async ({
 	limit,
-	query,
+	queries,
 	boundingSearch
 }: {
 	limit?: number;
-	query?: string;
+	queries?: Partial<Record<CleaningPointField, string>>;
 	boundingSearch?: {
 		lat: number;
 		lon: number;
@@ -38,36 +38,39 @@ const getClearPoint = async ({
 	};
 } = {}) => {
 	try {
-		let url = `${config.TAINAN_API_URL}${ApiPath.GET_TAINAN_DATA}`;
-		const params = new URLSearchParams({
-			resource_id: config.TAINAN_API_ID
-		});
+		let url = `${config.TAINAN_API_URL}${ApiPath.GET_TAINAN_DATA_SQL}`;
+		let sqlQuery = `SELECT * FROM "${config.TAINAN_API_ID}"`;
+		const whereConditions = [];
 
-		if (limit) {
-			params.append('limit', limit.toString());
-		}
-		if (query) {
-			params.append('q', query);
-		}
-
-		// 添加經緯度範圍查詢
 		if (boundingSearch) {
 			const boundingBox = calculateBoundingBox(
 				boundingSearch.lat,
 				boundingSearch.lon,
 				boundingSearch.distance
 			);
-			params.append('filters', JSON.stringify({
-				[CleaningPointField.LATITUDE]: {
-					between: [boundingBox.minLat, boundingBox.maxLat]
-				},
-				[CleaningPointField.LONGITUDE]: {
-					between: [boundingBox.minLon, boundingBox.maxLon]
-				}
-			}));
+			whereConditions.push(
+				`"${CleaningPointField.LATITUDE}" BETWEEN ${boundingBox.minLat} AND ${boundingBox.maxLat}`
+			);
+			whereConditions.push(
+				`"${CleaningPointField.LONGITUDE}" BETWEEN ${boundingBox.minLon} AND ${boundingBox.maxLon}`
+			);
 		}
 
-		url += `?${params.toString()}`;
+		if (queries) {
+			for (const [key, value] of Object.entries(queries)) {
+				whereConditions.push(`"${key}" LIKE '%${value}%'`);
+			}
+		}
+
+		if (whereConditions.length > 0) {
+			sqlQuery += ` WHERE ${whereConditions.join(' AND ')}`;
+		}
+
+		if (limit) {
+			sqlQuery += ` LIMIT ${limit}`;
+		}
+
+		url += `?sql=${sqlQuery}`;
 
 		const resp = await fetch(url);
 		const data: ApiResponse<CleanPointData> = await resp.json();
