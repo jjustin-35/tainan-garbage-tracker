@@ -1,15 +1,16 @@
-<script>
-  import { Tabs, TabsList, TabsTrigger } from "$lib/shadcn/components/ui/tabs";
-  export let activeTab = "Trash";
-  const tabs = ["Recommended", "Favorite", "Trash"];
+<script lang="ts">
+  import * as Tabs from "$lib/shadcn/components/ui/tabs";
+  export let activeTab: string;
+  export let tabs: string[];
+  export let onTabChange: (tab: string) => void;
 </script>
 
-<Tabs value={activeTab} class="border-b border-gray-200">
-  <TabsList class="flex justify-around">
+<Tabs.Root value={activeTab} class="border-b px-4 pb-4 min-w-full overflow-x-scroll">
+  <Tabs.List class="flex justify-around bg-yellow-400 p-0">
     {#each tabs as tab}
-      <TabsTrigger value={tab} class="flex-1 text-center p-4">
+      <Tabs.Trigger value={tab} class="text-center text-white" on:click={() => onTabChange(tab)}>
         {tab}
-      </TabsTrigger>
+      </Tabs.Trigger>
     {/each}
-  </TabsList>
-</Tabs>
+  </Tabs.List>
+</Tabs.Root>

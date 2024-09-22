@@ -1,23 +1,31 @@
-<script>
-	import { Button } from '$lib/shadcn/components/ui/button';
+<script lang="ts">
+	import { Input } from '$lib/shadcn/components/ui/input';
+
+	export let onSearch: (value: string) => void;
+	let value: string = '';
+
+	const handleInput = (e: Event) => {
+		const input = e.target as HTMLInputElement;
+		value = input.value;
+	};
+
+	const handleKeyPress = (event: KeyboardEvent) => {
+		if (event.key === 'Enter') {
+			onSearch(value);
+		}
+	};
 </script>
 
-<div class="flex items-center justify-between p-4">
-	<input
+<div class="flex items-center justify-between gap-2 p-4">
+	<div class="h-[50px] w-[50px] content-center">
+		<i class="fa-solid fa-truck-fast block text-[36px] text-white"></i>
+	</div>
+	<Input
 		type="text"
 		placeholder="Search..."
-		class="w-full rounded-md border border-gray-300 p-2 text-gray-600"
+		{value}
+		on:change={handleInput}
+		on:keypress={handleKeyPress}
+		class="w-full rounded-full"
 	/>
-	<Button variant="outline" class="ml-4 rounded-full bg-yellow-400 p-2">
-		<svg
-			class="h-6 w-6 text-white"
-			fill="none"
-			stroke="currentColor"
-			viewBox="0 0 24 24"
-			xmlns="http://www.w3.org/2000/svg"
-		>
-			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-6-6m-6 6l6-6"
-			></path>
-		</svg>
-	</Button>
 </div>
